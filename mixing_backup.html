@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Color Mixer</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap');
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Manrope', sans-serif;
+      background: linear-gradient(to bottom, #fff8f5, #fef6fa);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      color: #222;
+    }
+
+    .container {
+    max-width: 1200px;
+    width: 100%;
+    padding: 80px 20px 40px; /* increased top padding */
+    box-sizing: border-box;
+    }
+
+
+
+    .bucket-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 30px auto 12px;
+    position: relative;
+    flex-wrap: nowrap;
+    gap: 0;
+    }
+
+    .swatch {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    margin-left: -10px; /* overlap effect */
+    z-index: 1;
+    }
+
+    .swatch:first-child {
+    margin-left: 0; /* prevent leftmost item from shifting */
+    }
+
+    .swatch:hover {
+    transform: scale(1.2);
+    }
+
+    .mixer-section {
+      display: flex;
+      flex-direction: column;
+      gap: 60px;
+      margin-top: 20px;
+      width: 100%;
+      align-items: center;
+    }
+
+    @media(min-width: 768px) {
+  .mixer-section {
+    flex-direction: row;
+    justify-content: space-around;
+    gap: 100px;
+  }
+}
+
+@media(max-width: 767px) {
+  .mixer-section {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 40px;
+  }
+}
+
+.mixer {
+  flex: 0 1 45%;
+  max-width: 45%;
+}
+
+@media (max-width: 767px) {
+  .mixer-section {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 30px;
+  }
+
+  .mixer {
+    flex: 0 1 45%;
+    max-width: 45%;
+    margin-bottom: 20px;
+    gap: 8px;
+  }
+}
+
+
+    .mixer {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .mix-circle {
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, #fff, #f3f3f3);
+      box-shadow: inset 0 1px 3px rgba(255,255,255,0.5), 0 8px 20px rgba(0,0,0,0.05);
+      border: 1px solid #eaeaea;
+      position: relative;
+      overflow: hidden;
+    }
+
+    canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      border-radius: 50%;
+      width: 100%;
+      height: 100%;
+    }
+
+    #warmHex, #coolHex {
+      font-weight: 600;
+      font-size: 16px;
+      color: #111;
+      text-align: center;
+    }
+
+    #warmRecipe, #coolRecipe {
+      font-size: 13px;
+      font-weight: 400;
+      color: #777;
+      font-style: italic;
+      text-align: center;
+    }
+
+    .reset-button {
+      margin: 50px auto 20px;
+      padding: 14px 34px;
+      font-size: 15px;
+      font-weight: 600;
+      background: linear-gradient(to right, #f88aaa, #f4628b);
+      color: #fff;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.08);
+      transition: background 0.3s ease, transform 0.2s ease;
+      display: block;
+    }
+
+    .reset-button:hover {
+      background: linear-gradient(to right, #ec6f97, #d84e76);
+      transform: translateY(-2px);
+    }
+
+    .palette-label {
+    font-family: 'Pacifico', cursive;
+    font-style: italic;
+    font-weight: 900;
+    font-size: 30px;
+    letter-spacing: 1px;
+    }
+
+
+    @media (max-width: 767px) {
+      .bucket {
+        width: 48px;
+        height: 48px;
+      }
+
+      .mix-circle {
+        width: 160px;
+        height: 160px;
+      }
+
+      .label {
+        font-size: 30px;
+        letter-spacing: 0.5px;
+      }
+
+      #warmHex, #coolHex {
+        font-size: 14px;
+      }
+
+      #warmRecipe, #coolRecipe {
+        font-size: 12px;
+      }
+
+      .reset-button {
+        font-size: 14px;
+        padding: 12px 28px;
+      }
+
+      .logo-wrapper {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 20px;
+        }
+
+        .logo {
+        height: 40px;
+        max-width: 160px;
+        object-fit: contain;
+        }
+
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="logo-wrapper">
+        <img src="/Users/dhruvibakeri/Desktop/TRUEHUE/CODE/colour-mixing-app/final_logo cropped.jpg" alt="TrueHue Logo" class="logo" />
+      </div>      
+    <div class="bucket-row">
+        <img src="yellow.png" alt="Yellow" onclick="addColor('yellow')" class="swatch" />
+        <img src="blue.png" alt="Blue" onclick="addColor('blue')" class="swatch" />
+        <img src="red.png" alt="Red" onclick="addColor('red')" class="swatch" />
+        <img src="white.png" alt="White" onclick="addColor('white')" class="swatch" />
+        <img src="black.png" alt="Black" onclick="addColor('black')" class="swatch" />  
+    </div>
+
+    <div class="mixer-section">
+      <div class="mixer">
+        <div class="label palette-label" style="color: #030303;">Warm</div>
+        <div class="mix-circle" id="warmMixer">
+          <canvas id="warmCanvas" width="180" height="180"></canvas>
+        </div>
+        <div class="label" id="warmHex">#HEX</div>
+        <div class="label" id="warmRecipe" style="font-size: 14px; font-weight: 400; color: #666;"></div>
+      </div>
+      <div class="mixer">
+        <div class="label palette-label" style="color: #0a090a;">Cool</div>
+        <div class="mix-circle" id="coolMixer">
+          <canvas id="coolCanvas" width="180" height="180"></canvas>
+        </div>
+        <div class="label" id="coolHex">#HEX</div>
+        <div class="label" id="coolRecipe" style="font-size: 14px; font-weight: 400; color: #666;"></div>
+      </div>
+    </div>
+
+    <button class="reset-button" onclick="resetMixers()">Reset</button>
+
+    <script>
+const colorValues = { yellow: [55, 100, 50], blue: [210, 100, 30], red: [0, 100, 40], white: [0, 0, 100], black: [0, 0, 0] };
+const mixes = { warm: [], cool: [] };
+let selectedMixer = 'warm';
+
+document.getElementById('warmMixer').onclick = () => selectedMixer = 'warm';
+document.getElementById('coolMixer').onclick = () => selectedMixer = 'cool';
+
+function addColor(colorName) {
+  if (colorName === 'white' || colorName === 'black') {
+    mixes[selectedMixer].push(colorName);
+  } else {
+    mixes[selectedMixer].push(colorValues[colorName]);
+  }
+  animateDrop(colorName);
+}
+
+function animateDrop(colorName) {
+  const canvas = document.getElementById(selectedMixer + 'Canvas');
+  const ctx = canvas.getContext('2d');
+  const centerX = canvas.width / 2;
+  const centerY = canvas.height / 2;
+  let dropX = centerX;
+  let dropY = -20;
+  let speed = 2;
+
+  function fall() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const color = computeMixedColor(selectedMixer);
+    if (color) {
+      ctx.beginPath();
+      ctx.fillStyle = color;
+      ctx.arc(centerX, centerY, canvas.width / 2, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.beginPath();
+    ctx.fillStyle = colorName;
+    ctx.arc(dropX, dropY, 10, 0, Math.PI * 2);
+    ctx.fill();
+    dropY += speed;
+    speed += 0.02;
+    if (dropY < centerY - 40) {
+      requestAnimationFrame(fall);
+    } else {
+      animateSwirl(colorName);
+    }
+  }
+  fall();
+}
+
+function animateSwirl(colorName) {
+  const canvas = document.getElementById(selectedMixer + 'Canvas');
+  const ctx = canvas.getContext('2d');
+  const centerX = canvas.width / 2;
+  const centerY = canvas.height / 2;
+  let steps = 0;
+  const totalSteps = 150;
+  let pathPoints = [];
+
+  function easeOutCubic(t) {
+    return 1 - Math.pow(1 - t, 3);
+  }
+
+  function swirl() {
+    const progress = easeOutCubic(steps / totalSteps);
+    const swirlRadius = (canvas.width / 2 - 10) * (1 - progress);
+    const swirlAngle = -Math.PI / 2 - (4 * Math.PI * progress);
+    const x = centerX + Math.cos(swirlAngle) * swirlRadius;
+    const y = centerY + Math.sin(swirlAngle) * swirlRadius;
+    pathPoints.push({ x, y });
+    if (pathPoints.length > 60) pathPoints.shift();
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    ctx.globalAlpha = Math.min(progress * 2, 1);
+    const color = computeMixedColor(selectedMixer);
+    if (color) {
+      ctx.beginPath();
+      ctx.fillStyle = color;
+      ctx.arc(centerX, centerY, canvas.width / 2, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    ctx.globalAlpha = 1 - progress;
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.strokeStyle = colorName;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.lineWidth = 30;
+
+    if (pathPoints.length >= 2) {
+      ctx.beginPath();
+      ctx.moveTo(pathPoints[0].x, pathPoints[0].y);
+      for (let i = 0; i < pathPoints.length - 1; i++) {
+        const p0 = pathPoints[i];
+        const p1 = pathPoints[i + 1];
+        const midX = (p0.x + p1.x) / 2;
+        const midY = (p0.y + p1.y) / 2;
+        ctx.quadraticCurveTo(p0.x, p0.y, midX, midY);
+      }
+      ctx.stroke();
+    }
+
+    ctx.globalAlpha = 1;
+
+    steps++;
+    if (steps < totalSteps) {
+      requestAnimationFrame(swirl);
+    }
+  }
+
+  swirl();
+}
+
+function computeMixedColor(mixerName) {
+  const hexDisplay = document.getElementById(mixerName + 'Hex');
+  const recipeDisplay = document.getElementById(mixerName + 'Recipe');
+  const mix = mixes[mixerName].slice();
+  if (mix.length === 0) return null;
+  let sumX = 0, sumY = 0, totalS = 0, totalL = 0, totalCount = 0, hueCount = 0;
+  for (let c of mix) {
+    let h, s, l;
+    if (c === 'white') { s = 0; l = 100; }
+    else if (c === 'black') { s = 0; l = 0; }
+    else { [h, s, l] = c; let rad = h * Math.PI / 180; sumX += Math.cos(rad); sumY += Math.sin(rad); hueCount++; }
+    totalS += s; totalL += l; totalCount++;
+  }
+  if (totalCount === 0 || hueCount === 0) return null;
+  let avgH = Math.atan2(sumY, sumX) * 180 / Math.PI;
+  if (avgH < 0) avgH += 360;
+  let avgS = totalS / totalCount;
+  let avgL = totalL / totalCount;
+  let hueSpread = Math.sqrt(sumX * sumX + sumY * sumY) / hueCount;
+  avgS = avgS * (1 - (1 - hueSpread) * 0.4);
+  const h = Math.round(avgH);
+  const s = Math.round(avgS);
+  const l = Math.round(avgL);
+  const hex = hslToHex(h, s, l);
+  hexDisplay.textContent = hex;
+  const counts = {};
+  mixes[mixerName].forEach(c => {
+    const key = typeof c === 'string'
+      ? c
+      : Object.entries(colorValues).find(([name, val]) => JSON.stringify(val) === JSON.stringify(c))?.[0] || 'custom';
+    counts[key] = (counts[key] || 0) + 1;
+  });
+  const recipeText = Object.entries(counts).map(([key, count]) => `${count} ${key}`).join(', ');
+  recipeDisplay.textContent = recipeText;
+  return `hsl(${h}, ${s}%, ${l}%)`;
+}
+
+function resetMixers() {
+  mixes.warm = [];
+  mixes.cool = [];
+  ['warm', 'cool'].forEach(mixer => {
+    const canvas = document.getElementById(mixer + 'Canvas');
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  });
+}
+
+function hslToHex(h, s, l) {
+  s /= 100;
+  l /= 100;
+  const k = n => (n + h / 30) % 12;
+  const a = s * Math.min(l, 1 - l);
+  const f = n => {
+    const color = l - a * Math.max(Math.min(k(n) - 3, 9 - k(n), 1), -1);
+    return Math.round(255 * color).toString(16).padStart(2, '0');
+  };
+  return `#${f(0)}${f(8)}${f(4)}`;
+}
+</script>
+  </div>
+</body>
+</html>
